@@ -162,9 +162,11 @@ Actual time needed to complete: 45 minutes
 
 **Number and name of feature: Feature 2, day 3: Server**
 
-Estimate of time needed to complete: 
+Estimate of time needed to complete:  3hours
 
-Start time:
+Start time: 10:05
+
+Had lunch: -45min
 
 Finish time:
 
