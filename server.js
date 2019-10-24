@@ -32,7 +32,7 @@ client.on('error', err => console.error(err));
 app.get('/location', handleLocation);
 app.get('/weather', handleWeather);
 app.get('/trails', handleTrails);
-app.get('/add', handleAdd);
+// app.get('/add', handleAdd);
 
 let locales = {};
 
@@ -41,10 +41,10 @@ function handleLocation (request, response){
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${city}&key=${process.env.GEOCODE_API_KEY}`;
 
   if( locales[url] ){
-    console.log('using cache');
+    // console.log('using cache');
     response.send(locales[url]);
   } else {
-    console.log('getting data from api');
+    // console.log('getting data from api');
     superagent.get(url)
       .then(resultsFromSuperagent => {
         // console.log(resultsFromSuperagent.body.results[0].geometry);
@@ -52,7 +52,8 @@ function handleLocation (request, response){
 
         // store location in the in-memory location object cache
         locales[url] = locationObj;
-
+        // handleAdd
+        console.log(locationObj);
         response.status(200).send(locationObj);
       })
       .catch ((error) => {
@@ -60,6 +61,18 @@ function handleLocation (request, response){
         response.status(500).send('Our bad, yo.');
       })
   }
+}
+
+
+function handleAdd(object) {
+  let SQL = 'INSERT INTO locations (search_query, formatted_address, latitude, longitude) VALUES ($1, $2, $3, $4) RETURNING *'
+  let safeValues = [search_query, formatted_address, latitude, longitude];
+  client.query(SQL, safeValues)
+    .then( results => {
+      response.status(200).json(results);
+    })
+
+    .catch (error => error(error));
 }
 
 
@@ -97,7 +110,7 @@ function handleTrails(request, response){
       const trailsData = resultsFromSuperagent.body.trails.map(prop => {
         return new Trail(prop);
       })
-      console.log(trailsData);
+      // console.log(trailsData);
       response.status(200).send(trailsData);
     })
     .catch ((error) => {
@@ -108,18 +121,18 @@ function handleTrails(request, response){
 
 //app.get('/', (request, response) => response.send('Hello World!'))
 
-function handleAdd(request, response) {
-  let city = request.query.city;
-  let SQL = 'INSERT INTO locations (city, blah) VALUES ($1, $2) RETURNING *'
-  let safeValues = [city, blah];
-  client.query(SQL, safeValues)
-  .then( results => {
-    response.status(200).json(results);
-  })
+// function handleAdd(request, response) {
+//   let city = request.query.city;
+//   let SQL = 'INSERT INTO locations (city, latitude, longitude) VALUES ($1, $2) RETURNING *'
+//   let safeValues = [city, latitude, longitude];
+//   client.query(SQL, safeValues)
+//     .then( results => {
+//       response.status(200).json(results);
+//     })
 
-  .catch (error => error(error));
-}
- 
+//     .catch (error => error(error));
+// }
+
 
 
 //error msg handling for status 404
@@ -135,10 +148,10 @@ app.get('*',(request, response) => {
 app.get('/locations', (request, response) => {
   let SQL='SELECT * FROM locations';
   client.query(SQL)
-  .then(results => { 
-    response.status(200).json(results.rows);
-  })
-  .catch(error => error(error));
+    .then(results => { 
+      response.status(200).json(results.rows);
+    })
+    .catch(error => error(error));
 })
 
 //this function takes location data submitted from user query and instantiate a series of objects.
