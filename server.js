@@ -32,7 +32,7 @@ client.on('error', err => console.error(err));
 app.get('/location', handleLocation);
 app.get('/weather', handleWeather);
 app.get('/trails', handleTrails);
-app.get('/add', handleAdd)
+app.get('/add', handleAdd);
 
 let locales = {};
 
@@ -108,11 +108,18 @@ function handleTrails(request, response){
 
 //app.get('/', (request, response) => response.send('Hello World!'))
 
-function handleAdd(request, response) => {
+function handleAdd(request, response) {
   let city = request.query.city;
-  let 
-}
+  let SQL = 'INSERT INTO locations (city, blah) VALUES ($1, $2) RETURNING *'
+  let safeValues = [city, blah];
+  client.query(SQL, safeValues)
+  .then( results => {
+    response.status(200).json(results);
+  })
 
+  .catch (error => error(error));
+}
+ 
 
 
 //error msg handling for status 404
@@ -123,6 +130,15 @@ app.get('*',(request, response) => {
     responseText: 'Sorry, something went wrong'
   };
   response.send(Error);
+})
+
+app.get('/locations', (request, response) => {
+  let SQL='SELECT * FROM locations';
+  client.query(SQL)
+  .then(results => { 
+    response.status(200).json(results.rows);
+  })
+  .catch(error => error(error));
 })
 
 //this function takes location data submitted from user query and instantiate a series of objects.
