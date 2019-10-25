@@ -9,20 +9,7 @@ const pg = require('pg');
 
 const app = express();
 app.use(cors());
-app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Content-Type, Authorization, Content-Length, X-Requested-With'
-  );
-  // intercept OPTIONS method
-  if ('OPTIONS' === req.method) {
-    res.send(200);
-  } else {
-    next();
-  }
-});
+
 
 const PORT = process.env.PORT || 3001; //reading port 3000 from .env
 const client = new pg.Client(process.env.DATABASE_URL);
@@ -119,7 +106,6 @@ function handleTrails(request, response){
     })
 }
 
-//app.get('/', (request, response) => response.send('Hello World!'))
 
 // function handleAdd(request, response) {
 //   let city = request.query.city;
@@ -194,7 +180,5 @@ client.connect()
     app.listen(PORT, () => console.log(`app is listening on port ${PORT}!`))
   });
 
-/*in-memeory-cache
-//if locations doesn't have it, fetch it, and store it.
-let locations = {};
+
 /////////////////*/
